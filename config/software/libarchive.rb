@@ -45,6 +45,7 @@ build do
             "--without-zlib",
             "--disable-bsdtar",
             "--disable-bsdcpio",
+            "--disable-xattr",
             "--without-lzmadec",
             "--without-openssl", env: env)
 
