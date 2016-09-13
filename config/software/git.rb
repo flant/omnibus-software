@@ -19,6 +19,7 @@ default_version "2.8.2"
 
 license "LGPL-2.1"
 license_file "LGPL-2.1"
+skip_transitive_dependency_licensing true
 
 dependency "curl"
 dependency "zlib"
@@ -103,7 +104,7 @@ build do
     config_hash["USE_ST_TIMESPEC"] = "YesPlease"
     config_hash["HAVE_BSD_SYSCTL"] = "YesPlease"
     config_hash["NO_R_TO_GCC_LINKER"] = "YesPlease"
-  elsif solaris?
+  elsif solaris_10?
     env["CC"] = "gcc"
     env["SHELL_PATH"] = "#{install_dir}/embedded/bin/bash"
     config_hash["NEEDS_SOCKET"] = "YesPlease"

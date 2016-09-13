@@ -18,8 +18,9 @@ name "nodejs"
 
 license "MIT"
 license_file "LICENSE"
+skip_transitive_dependency_licensing true
 
-if ppc64? || ppc64le?
+if ppc64? || ppc64le? || s390x?
   default_version "0.10.38-release-ppc"
 else
   default_version "0.10.35"

@@ -18,13 +18,13 @@ name "openssl"
 
 license "OpenSSL"
 license_file "LICENSE"
+skip_transitive_dependency_licensing true
 
 fips_enabled = (project.overrides[:fips] && project.overrides[:fips][:enabled]) || false
 
 dependency "zlib"
 dependency "cacerts"
 dependency "makedepend" unless aix? || windows?
-dependency "patch" if solaris_10?
 dependency "openssl-fips" if fips_enabled
 
 default_version "1.0.1t"
@@ -35,6 +35,7 @@ source url: "https://www.openssl.org/source/openssl-#{version}.tar.gz", extract:
 
 # We have not tested version 1.0.2. It's here so we can run experimental builds
 # to verify that it still compiles on all our platforms.
+version("1.0.2h") { source sha256: "1d4007e53aad94a5b2002fe045ee7bb0b3d98f1a47f8b2bc851dcd1c74332919" }
 version("1.0.2g") { source md5: "f3c710c045cdee5fd114feb69feba7aa" }
 version("1.0.1t") { source md5: "9837746fcf8a6727d46d22ca35953da1" }
 version("1.0.1s") { source md5: "562986f6937aabc7c11a6d376d8a0d26" }
@@ -92,7 +93,7 @@ build do
       # This should not require a /bin/sh, but without it we get
       # Errno::ENOEXEC: Exec format error
       platform = sparc? ? "solaris-sparcv9-gcc" : "solaris-x86-gcc"
-      "/bin/sh ./Configure #{platform}"
+      "/bin/sh ./Configure #{platform} -static-libgcc"
     elsif solaris_11?
       "/bin/bash ./Configure solaris64-x86_64-gcc -static-libgcc"
     elsif windows?
@@ -102,8 +103,10 @@ build do
       prefix =
         if linux? && ppc64?
           "./Configure linux-ppc64"
-        elsif linux? && ohai["kernel"]["machine"] == "s390x"
-          "./Configure linux64-s390x"
+        elsif linux? && s390x?
+          # With gcc > 4.3 on s390x there is an error building
+          # with inline asm enabled
+          "./Configure linux64-s390x -DOPENSSL_NO_INLINE_ASM"
         else
           "./config"
         end

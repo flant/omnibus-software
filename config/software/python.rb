@@ -19,6 +19,7 @@ default_version "2.7.9"
 
 license "Python-2.0"
 license_file "LICENSE"
+skip_transitive_dependency_licensing true
 
 dependency "ncurses"
 dependency "zlib"
@@ -56,4 +57,10 @@ build do
 
   # Remove unused extension which is known to make healthchecks fail on CentOS 6
   delete "#{install_dir}/embedded/lib/python2.7/lib-dynload/_bsddb.*"
+
+  # Remove sqlite3 libraries, if you want to include sqlite, create a new def
+  # in your software project and build it explicitly. This removes the adapter
+  # library from python, which links incorrectly to a system library. Adding
+  # your own sqlite definition will fix this.
+  delete "#{install_dir}/embedded/lib/python2.7/lib-dynload/_sqlite3.*"
 end

@@ -19,6 +19,7 @@ default_version "2.0.10"
 
 license "OpenSSL"
 license_file "https://www.openssl.org/source/license.html"
+skip_transitive_dependency_licensing true
 
 version("2.0.11") { source sha256: "a6532875956d357a05838ca2c9865b8eecac211543e4246512684b17acbbdfac" }
 version("2.0.10") { source sha256: "a42ccf5f08a8b510c0c78da1ba889532a0ce24e772b576604faf09b4d6a0f771" }
@@ -57,6 +58,12 @@ build do
     # compile
     configure_command = ["perl ./Configure linux-ppc64"]
     configure_command << "--prefix=#{install_dir}/embedded"
+  elsif s390x?
+    configure_command = ["perl ./Configure linux64-s390x"]
+    configure_command << "--prefix=#{install_dir}/embedded"
+    # Unfortunately openssl-fips is not supported on s390x, so we have to tell it to
+    # compile solely in C
+    configure_command << "no-asm"
   else
     configure_command = ["./config"]
   end
